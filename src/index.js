@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css'; //TODO: delete above css?
+import Tic_Tac_Toe from './tic_tac_toe';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Tic_Tac_Toe />
   </React.StrictMode>,
   document.getElementById('root')
 );
