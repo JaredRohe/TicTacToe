@@ -16,8 +16,14 @@ class Tic_Tac_Toe extends React.Component{
 
         this.state = {
             squares: Array(9).fill(null),
-            xNext: true,
+            xNext: true, //REmove?
             playerTurn: true,
+            playerMarker: 'X',
+            gameOver: false,
+            winnerIsPlayer: null,
+            winningLine: null,
+            gifWin: null,
+            gifLose: null,
             gif: null,
           };
     }
@@ -35,7 +41,7 @@ class Tic_Tac_Toe extends React.Component{
         for (let i = 0; i < lines.length; i++) {
           const [a, b, c] = lines[i];
           if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return [squares[a], lines[i]];
           }
         }
         return null;
@@ -48,8 +54,7 @@ class Tic_Tac_Toe extends React.Component{
         const squares = this.state.squares.slice();
         const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
         const xNext = this.state.xNext;
-        //squares[8] = this.state.xNext ? 'X' : 'O'; //CHANGE 8
-        // const move = this.makeEasyMove();
+        // const move = this.makeEasyMove(); SWITCH STATEMENT HERE
         const move = this.makeHardMove();
         this.setState(move);
     }
@@ -69,50 +74,33 @@ class Tic_Tac_Toe extends React.Component{
         const opponentPosition = squares.findIndex((marker) => marker === 'X');
         const AIPosition = squares.findIndex((marker) => marker === 'O');
 
-        const checkForBlockingAlong = (index, marker) => {
-            for(let [direction, lines] of Object.entries(directions)){
-                if(direction === 'DIAGS' ){
-                    let offDiags = [1,3,5,7];
-                    if(offDiags.findIndex((i) => i===index)!== -1){
-                        continue;
-                    }
-                }
-            const [currentRow] = lines.filter((row) => row.findIndex((i) => i === index) !== -1)
-            const neighbors = currentRow.filter((i) => index!==i);
-            
-            if(neighbors.findIndex((i) => squares[i] === 'X') !== -1){
-                const [otherNeighbor] = neighbors.filter((i) => squares[i] !=='X');
-                if(squares[otherNeighbor] !== 'O'){
-                    squares[otherNeighbor] = 'O'
-                    return {squares: squares, xNext: !this.state.xNext, playerTurn: !this.state.playerTurn}
-                }
-                
-            }
-        }
-        }
-
-        const checkForWinningMove = (index) => {
-            for(let [direction, lines] of Object.entries(directions)){
-                if(direction === 'DIAGS' ){
-                    let offDiags = [1,3,5,7];
-                    if(offDiags.findIndex((i) => i===index)!== -1){
-                        continue;
-                    }
-                }
+        const checkForMove = (index, blocking = false) => { //rename check for move
             const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
+            for(let [direction, lines] of Object.entries(directions)){
+                if(direction === 'DIAGS' ){
+                    let offDiags = [1,3,5,7];
+                    if(offDiags.findIndex((i) => i===index)!== -1){
+                        continue;
+                    }
+                }
             const [currentRow] = lines.filter((row) => row.findIndex((i) => i === index) !== -1)
             const neighbors = currentRow.filter((i) => index!==i);
             
-            if(neighbors.findIndex((i) => squares[i] === 'O') !== -1){
-                const [otherNeighbor] = neighbors.filter((i) => squares[i] !=='X');
-                if(squares[otherNeighbor] !== 'O'){
-                    squares[otherNeighbor] = 'O'
+            let aiMarker = 'O'; //TODO
+            let playerMarker = 'X';
+
+            const marker = blocking ? playerMarker : aiMarker;
+
+            if(neighbors.findIndex((i) => squares[i] === marker) !== -1){ //
+                const [otherNeighbor] = neighbors.filter((i) => squares[i] !==marker);
+                if(availableSquares.includes(otherNeighbor)){ // change to == 0 or is available
+                    squares[otherNeighbor] = 'O';
                     return {squares: squares, xNext: !this.state.xNext, playerTurn: !this.state.playerTurn}
                 }
                 
             }
         }
-    }
+        }
 
     const checkForDiagonalAttack = (marker= 'X') =>{
         if(squares[0] == marker && squares[8] == marker || squares[2] == marker && squares[6]){
@@ -127,15 +115,23 @@ class Tic_Tac_Toe extends React.Component{
     }
 
 
-    //TODO: call return expr for all X positions
+    //TODO: GET O positions.... check for wins
+    //THEN get X positions.... check for blocks
 
     //change marker  
-    let positions = squares.reduce((positions, marker, idx) => marker === 'X' ? [...positions, idx] : positions, [] );
+    let positions = squares.reduce((positions, marker, idx) => marker === 'O' ? [...positions, idx] : positions, [] );
     for(let position of positions){
-        let [winningMove, blockingMove] = [checkForWinningMove(position, 'X'), checkForBlockingAlong(position, 'X')]; 
-        if(winningMove || blockingMove){
-            console.log("found")
-            return winningMove || blockingMove;
+        let winningMove= checkForMove(position); 
+        if(winningMove ){
+            return winningMove;
+        }
+    }
+
+    let opponentPositions = squares.reduce((positions, marker, idx) => marker === 'X' ? [...positions, idx] : positions, [] );
+    for(let position of opponentPositions){
+        let blockingMove= checkForMove(position, true); 
+        if(blockingMove ){
+            return blockingMove;
         }
     }
         return  checkForDiagonalAttack() || // this func may need work? 
@@ -147,17 +143,37 @@ class Tic_Tac_Toe extends React.Component{
     makeEasyMove(marker = 'O'){
         const squares = this.state.squares.slice();
         const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
-        //console.log(availableSquares);
         const randomSquareIndex = Math.floor(Math.random() * availableSquares.length);
         squares[availableSquares[randomSquareIndex]] = this.state.xNext ? 'X' : 'O';
         return {squares: squares, xNext: !this.state.xNext, playerTurn: !this.state.playerTurn}
+    }
 
 
+    renderGameOver(winner, line){
+        this.setState({squares: this.state.squares.slice(), gameOver: true, winnerIsPlayer: winner == this.state.playerMarker, winningLine: line});
+        // for(let i of line){
+        //     this.renderSquare(i);
+        // }
+        setTimeout(()=>{
+            if(winner === this.state.playerMarker){
+                //this.setState({gif: gifWin});
+            }else{
+                //this.setState({gif: gifWin});
+            }
+        } ,2000
+        )
 
     }
 
     componentDidUpdate(){
-        if(this.gameOver()) {return true;}
+        if(this.state.gameOver) return;
+
+        const gameOver = this.calculateWinner(this.state.squares.slice());
+        if(gameOver) {
+            const [winner, line] = gameOver;
+            this.renderGameOver(winner, line);
+            return ;
+        }
 
         if(!this.state.playerTurn){
             setTimeout(() => {
@@ -175,7 +191,7 @@ class Tic_Tac_Toe extends React.Component{
     }
 
     handleClick(i){
-        if(!this.state.playerTurn){
+        if(!this.state.playerTurn || this.state.gameOver){
             return;
         }
     const squares = this.state.squares.slice();
@@ -185,6 +201,15 @@ class Tic_Tac_Toe extends React.Component{
     
     }
 
+    isWinningSquare(i){
+        console.log(this.state.winningLine)
+        if(!this.state.winningLine) return;
+        if(this.state.winningLine.includes(i)){
+            console.log('WIN: '  + this.state.winnerIsPlayer || false )
+            return this.state.winnerIsPlayer || false;
+        }
+    }
+
     renderSquare(i) {
         return (
         <Col key={i} style={{padding: 0}}>
@@ -192,6 +217,7 @@ class Tic_Tac_Toe extends React.Component{
             position = {i}
             value={this.state.squares[i]} 
             onClick={this.state.squares[i] ? () => {}: () => this.handleClick(i)}
+            winningPlayerSquare = {this.isWinningSquare(i)}
           />
           </Col>
         );
@@ -208,7 +234,8 @@ class Tic_Tac_Toe extends React.Component{
         </p>
         </header>
     <div className="board" >
-
+{/*         
+        { !this.state.gameOver ? */}
         <Container>
             <Row>
                {[0,1,2].map( (i) => this.renderSquare(i)) }
@@ -218,11 +245,12 @@ class Tic_Tac_Toe extends React.Component{
             </Row>
             <Row>
                {[6,7,8].map( (i) => this.renderSquare(i)) }
-            </Row>
+            </Row> 
         </Container>
+         {/* :
+        <Gif gif={this.state.gif} width ={300}></Gif> */}
+
     </div>
-        
-      {this.state.gif &&<Gif gif={this.state.gif} width ={300}></Gif>}
       
     </div>
   );

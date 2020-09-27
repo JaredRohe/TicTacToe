@@ -64,3 +64,11 @@
   background-color: #007bff !important;
   cursor: default !important;
 }
+
+.btnPlayerWin{
+  background-color: #28a745 !important;
+}
+
+.btnPlayerLoss{
+  background-color:  #dc3545 !important;
+}

@@ -23,11 +23,23 @@ class Square extends React.Component {
         return styles;
     }
 
+    getClasses() {
+        const classes = [];
+        if(this.props.value){
+            classes.push('btnDisabled');
+        }
+        if(this.props.winningPlayerSquare !==undefined){
+            classes.push(this.props.winningPlayerSquare ? 'btnPlayerWin' : 'btnPlayerLoss')
+        }
+
+        return classes.join(' ');
+    }
+
     render() {
       return (
         <Button
         style = {this.getStyles(this.props.position)}
-        className={this.props.value ? 'btnDisabled' : null }
+        className={this.getClasses() }
         onClick={() => this.props.onClick()}
         >
           {this.props.value}
