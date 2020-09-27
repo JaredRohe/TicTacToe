@@ -1,6 +1,7 @@
 .App {
   text-align: center;
   background-color: #282c34;
+  color: white;
 }
 
 .App-logo {
@@ -47,13 +48,13 @@
 
 .row {
 
-  height: 200px;
+  height: 150px;
 
 }
 
 
 .container {
-  width: 600px;
+  width: 550px;
 }
 .board {
 

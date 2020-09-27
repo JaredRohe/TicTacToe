@@ -6,15 +6,18 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Gif } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
+import GameControls from './components/GameControls';
 
 class Tic_Tac_Toe extends React.Component{
 
 
     constructor(props){
         super(props);
+        this.state = this.getInitialState();
+    }
 
-
-        this.state = {
+    getInitialState(){
+        return {
             squares: Array(9).fill(null),
             xNext: true, //REmove?
             playerTurn: true,
@@ -25,6 +28,7 @@ class Tic_Tac_Toe extends React.Component{
             gifWin: null,
             gifLose: null,
             gif: null,
+            difficulty: 'EASY',
           };
     }
     calculateWinner(squares) {
@@ -51,11 +55,20 @@ class Tic_Tac_Toe extends React.Component{
     }
 
     makeAImove(){
-        const squares = this.state.squares.slice();
-        const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
-        const xNext = this.state.xNext;
-        // const move = this.makeEasyMove(); SWITCH STATEMENT HERE
-        const move = this.makeHardMove();
+
+        let move;
+        switch(this.state.difficulty){
+            case 'EASY':
+                move=this.makeEasyMove();
+                break;
+            case 'UNBEATABLE':
+                move = this.makeHardMove();
+                break;
+            default:
+                move = this.makeEasyMove();
+                break;
+        } 
+
         this.setState(move);
     }
 
@@ -202,10 +215,8 @@ class Tic_Tac_Toe extends React.Component{
     }
 
     isWinningSquare(i){
-        console.log(this.state.winningLine)
         if(!this.state.winningLine) return;
         if(this.state.winningLine.includes(i)){
-            console.log('WIN: '  + this.state.winnerIsPlayer || false )
             return this.state.winnerIsPlayer || false;
         }
     }
@@ -223,20 +234,25 @@ class Tic_Tac_Toe extends React.Component{
         );
       }
 
+      handleDifficultyChange(e){
+          this.setState({difficulty : e.target.value}); //TODO: MAP TO CONSTANT!
+      }
+
   render() {
     
     
     return (
     <div className="App">
-      <header className="App-header">
-      <p>
-          Tic Tac Toe
-        </p>
-        </header>
+      <div class="jumbotron App">
+        <h1 class="display-4">Tic-Tac-Toe</h1>
+        </div>
     <div className="board" >
+
+       
 {/*         
         { !this.state.gameOver ? */}
         <Container>
+        <GameControls currentDifficulty={this.state.difficulty} handleRestart = {() => this.setState(this.getInitialState())}handleDifficultyChange={(e) => this.handleDifficultyChange(e)}></GameControls>
             <Row>
                {[0,1,2].map( (i) => this.renderSquare(i)) }
             </Row>
