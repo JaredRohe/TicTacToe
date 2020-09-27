@@ -59,3 +59,8 @@
 
   padding-bottom: 100px;
 }
+
+.btnDisabled {
+  background-color: #007bff !important;
+  cursor: default !important;
+}

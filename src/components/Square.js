@@ -17,6 +17,7 @@ class Square extends React.Component {
             borderRight: new Set([2,5,8]).has(i) ? 'none': border,
             borderBottom: new Set([6,7,8]).has(i) ? 'none': border,
             borderRadius: 0,
+            fontSize: '88px',
         }
 
         return styles;
@@ -26,7 +27,7 @@ class Square extends React.Component {
       return (
         <Button
         style = {this.getStyles(this.props.position)}
-        className="square"
+        className={this.props.value ? 'btnDisabled' : null }
         onClick={() => this.props.onClick()}
         >
           {this.props.value}
