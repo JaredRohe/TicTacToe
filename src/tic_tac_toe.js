@@ -159,7 +159,7 @@ class TicTacToe extends React.Component{
 
     renderSquare(i) {
         return (
-        <Col key={i} style={{padding: 0}}>
+        <Col key={i}>
           <Square
             position = {i}
             value={this.state.squares[i]} 
@@ -185,10 +185,10 @@ class TicTacToe extends React.Component{
     
     return (
     <div className="App">
-      <div class="jumbotron App">
-        <h1 class="display-4">Tic-Tac-Toe</h1>
+      <div className="jumbotron App">
+        <h1 className="display-4">Tic-Tac-Toe</h1>
         </div>
-    <div className="board" >
+    <div data-testid='gameBoard' className="board" >
 
         <Container>
         <GameControls currentDifficulty={this.state.difficulty} handleRestart = {() => this.setState(this.getInitialState())}handleDifficultyChange={(e) => this.handleDifficultyChange(e)}></GameControls>

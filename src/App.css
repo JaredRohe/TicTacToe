@@ -44,6 +44,10 @@
 
 }
 
+.col {
+  padding: 0;
+}
+
 
 .container {
   width: 550px;

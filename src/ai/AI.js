@@ -46,8 +46,8 @@ const checkForMove = (squares, index, aiMarker, blocking = false) => {
                 continue;
             }
         }
-    const [currentRow] = lines.filter((row) => row.findIndex((i) => i === index) !== -1)
-    const neighbors = currentRow.filter((i) => index!==i);
+    const [currentLine] = lines.filter((row) => row.findIndex((i) => i === index) !== -1)
+    const neighbors = currentLine.filter((i) => index!==i);
 
     const playerMarker = getPlayerMaker(aiMarker)
     const marker = blocking ? playerMarker : aiMarker;
