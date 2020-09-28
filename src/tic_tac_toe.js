@@ -7,6 +7,7 @@ import Col from 'react-bootstrap/Col';
 import { Gif } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import GameControls from './components/GameControls';
+import GameOver from './components/GameOver';
 
 class Tic_Tac_Toe extends React.Component{
 
@@ -29,6 +30,7 @@ class Tic_Tac_Toe extends React.Component{
             gifLose: null,
             gif: null,
             difficulty: 'EASY',
+            showGIF: false,
           };
     }
     calculateWinner(squares) {
@@ -163,7 +165,11 @@ class Tic_Tac_Toe extends React.Component{
 
 
     renderGameOver(winner, line){
-        this.setState({squares: this.state.squares.slice(), gameOver: true, winnerIsPlayer: winner == this.state.playerMarker, winningLine: line});
+        this.setState({squares: this.state.squares.slice(), 
+            gameOver: true,
+            showGIF: true, 
+            winnerIsPlayer: winner === this.state.playerMarker, 
+            winningLine: line});
         // for(let i of line){
         //     this.renderSquare(i);
         // }
@@ -263,6 +269,7 @@ class Tic_Tac_Toe extends React.Component{
                {[6,7,8].map( (i) => this.renderSquare(i)) }
             </Row> 
         </Container>
+        <GameOver show={this.state.showGIF} handleClose={() => this.setState({showGIF:!this.state.showGIF})}></GameOver>
          {/* :
         <Gif gif={this.state.gif} width ={300}></Gif> */}
 
