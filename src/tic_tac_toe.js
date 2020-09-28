@@ -8,7 +8,7 @@ import { GiphyFetch } from '@giphy/js-fetch-api';
 import GameControls from './components/GameControls';
 import GameOver from './components/GameOver';
 import {AIMakeHardMove, AIMakeEasyMove} from './ai/AI';
- 
+
 class TicTacToe extends React.Component{
 
 
@@ -121,7 +121,7 @@ class TicTacToe extends React.Component{
     }
 
     async componentDidMount(){
-        const gf = new GiphyFetch('v9X9t65dtu4Y1N5O7V0yYJ6WawfilxYF'); // TODO: Read API Key from environment
+        const gf = new GiphyFetch(process.env.REACT_APP_GIF_KEY); // TODO: Read API Key from environment
         const gifLimit = 10;
         const { data: winGIFs } = await gf.search('win', { sort: 'relevant', limit: gifLimit });
         const { data: loseGIFs } = await gf.search('lose', { sort: 'relevant', limit: gifLimit });
