@@ -9,10 +9,10 @@ switch(props.outcome){
     case 'CAT':
         title =  'CATS GAME';
         break;
-    case 'X':
+    case 'PLAYER':
         title = 'YOU WON!';
         break;
-    case 'O':
+    case 'AI':
         title = 'YOU LOST =(';
         break;
     default:

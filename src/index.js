@@ -2,12 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; //TODO: delete above css?
-import Tic_Tac_Toe from './tic_tac_toe';
+import TicTacToe from './tic_tac_toe';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Tic_Tac_Toe />
+    <TicTacToe />
   </React.StrictMode>,
   document.getElementById('root')
 );
