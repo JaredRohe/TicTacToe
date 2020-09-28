@@ -4,7 +4,6 @@ import Square from './components/Square';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Gif } from '@giphy/react-components';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import GameControls from './components/GameControls';
 import GameOver from './components/GameOver';
@@ -23,6 +22,8 @@ class Tic_Tac_Toe extends React.Component{
             xNext: true, //REmove?
             playerTurn: true,
             playerMarker: 'X',
+            outcome: '',
+            winner: '',
             gameOver: false,
             winnerIsPlayer: null,
             winningLine: null,
@@ -118,7 +119,7 @@ class Tic_Tac_Toe extends React.Component{
         }
 
     const checkForDiagonalAttack = (marker= 'X') =>{
-        if(squares[0] == marker && squares[8] == marker || squares[2] == marker && squares[6]){
+        if((squares[0] == marker && squares[8] == marker )|| (squares[2] == marker && squares[6] == marker)){
             let availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
             availableSquares = availableSquares.filter((i) => ![0,2,6,8].includes(i) )
             if(availableSquares.length){
@@ -164,23 +165,14 @@ class Tic_Tac_Toe extends React.Component{
     }
 
 
-    renderGameOver(winner, line){
+    renderGameOver(winner, line=[]){
         this.setState({squares: this.state.squares.slice(), 
             gameOver: true,
-            showGIF: true, 
+            showGIF: true,
+            winner: winner? winner: 'CAT',
+            outcome: winner, 
             winnerIsPlayer: winner === this.state.playerMarker, 
             winningLine: line});
-        // for(let i of line){
-        //     this.renderSquare(i);
-        // }
-        setTimeout(()=>{
-            if(winner === this.state.playerMarker){
-                //this.setState({gif: gifWin});
-            }else{
-                //this.setState({gif: gifWin});
-            }
-        } ,2000
-        )
 
     }
 
@@ -194,9 +186,14 @@ class Tic_Tac_Toe extends React.Component{
             return ;
         }
 
+        const availableSquares = this.state.squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
+        if(availableSquares.length === 0){
+            this.renderGameOver('CAT');
+        }
+
         if(!this.state.playerTurn){
             setTimeout(() => {
-                this.makeAImove() // SHOW SPINNER
+                this.makeAImove()
             }, 500)
             
         }
@@ -205,8 +202,18 @@ class Tic_Tac_Toe extends React.Component{
 
     async componentDidMount(){
         const gf = new GiphyFetch('v9X9t65dtu4Y1N5O7V0yYJ6WawfilxYF');
-        const { data } = await gf.gif('fpXxIjftmkk9y');
-        this.setState({gif: data});
+        const gifLimit = 5;
+        const { data: winGIFs } = await gf.search('win', { sort: 'relevant', limit: gifLimit });
+        const { data: loseGIFs } = await gf.search('lose', { sort: 'relevant', limit: gifLimit });
+        const { data: catGIFs } = await gf.search('cat', { sort: 'relevant', limit: gifLimit });
+
+        const gifIndex = Math.floor(Math.random() * gifLimit -1) // -1  +1 here because first gif returned is slightly inappropriate!
+
+
+        this.catGIF = catGIFs[gifIndex];
+        this.loseGIF = loseGIFs[gifIndex];
+        this.winGIF = winGIFs[gifIndex];
+
     }
 
     handleClick(i){
@@ -246,6 +253,12 @@ class Tic_Tac_Toe extends React.Component{
 
   render() {
     
+    const outComeMap = {
+        'CAT' : this.catGIF,
+        'X': this.winGIF,
+        'O' : this.loseGIF,
+    }
+    const gif = outComeMap[this.state.outcome];
     
     return (
     <div className="App">
@@ -269,7 +282,7 @@ class Tic_Tac_Toe extends React.Component{
                {[6,7,8].map( (i) => this.renderSquare(i)) }
             </Row> 
         </Container>
-        <GameOver show={this.state.showGIF} handleClose={() => this.setState({showGIF:!this.state.showGIF})}></GameOver>
+        <GameOver outcome = {this.state.outcome} gif={gif} show={this.state.showGIF} handleClose={() => this.setState({showGIF:!this.state.showGIF})}></GameOver>
          {/* :
         <Gif gif={this.state.gif} width ={300}></Gif> */}
 
