@@ -1,10 +1,5 @@
 import Button from 'react-bootstrap/Button';
 import React from 'react';
-
-const xMarker = 'X';
-const oMarker = '0';
-
-
 class Square extends React.Component {
 
     getStyles(i) {

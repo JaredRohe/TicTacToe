@@ -120,7 +120,7 @@ class TicTacToe extends React.Component{
 
     }
 
-    async componentDidMount(){
+    async fetchGifs(){
         const gf = new GiphyFetch(process.env.REACT_APP_GIF_KEY); // TODO: Read API Key from environment
         const gifLimit = 10;
         const { data: winGIFs } = await gf.search('win', { sort: 'relevant', limit: gifLimit });
@@ -137,6 +137,10 @@ class TicTacToe extends React.Component{
             gifIndex = gifIndex + 1 === winGIFs.legth ? gifIndex + 1 : gifIndex -1
         }
         this.winGIF = winGIFs[gifIndex];
+    }
+
+    async componentDidMount(){
+        await this.fetchGifs();
 
     }
 
@@ -174,6 +178,11 @@ class TicTacToe extends React.Component{
           this.setState({difficulty : e.target.value});
       }
 
+      handleRestart(){
+        this.setState({...this.getInitialState(), difficulty:this.state.difficulty});
+        this.fetchGifs();
+      }
+
   render() {
     
     const outComeMap = {
@@ -191,7 +200,7 @@ class TicTacToe extends React.Component{
     <div data-testid='gameBoard' className="board" >
 
         <Container>
-        <GameControls currentDifficulty={this.state.difficulty} handleRestart = {() => this.setState(this.getInitialState())}handleDifficultyChange={(e) => this.handleDifficultyChange(e)}></GameControls>
+        <GameControls currentDifficulty={this.state.difficulty} handleRestart = {() => this.handleRestart()} handleDifficultyChange={(e) => this.handleDifficultyChange(e)}></GameControls>
             <Row>
                {[0,1,2].map( (i) => this.renderSquare(i)) }
             </Row>
