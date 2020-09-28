@@ -4,7 +4,7 @@
 export function AIMakeHardMove(squares, aiMarker) {
     if(!squares[4]){
         squares[4] = aiMarker;
-        return {squares: squares}
+        return {squares}
     }
 
    
@@ -23,13 +23,22 @@ export function AIMakeHardMove(squares, aiMarker) {
             return blockingMove;
         }
     }
-        return  checkForDiagonalAttack(squares, aiMarker) ||
+        return  checkForDiagonalAttack(squares, aiMarker) || checkForCorner(squares, aiMarker) ||
                 AIMakeEasyMove(squares, aiMarker);
 
 }
 
 const getPlayerMaker = (aiMarker) => {
     return {'X':'O', 'O':'X'}[aiMarker];
+}
+
+const checkForCorner = (squares, aiMarker) => {
+    const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
+    const availableCorners = availableSquares.filter((i) => [0,2,6,8].includes(i));
+    if(availableCorners.length){
+        squares[availableCorners[0]] = aiMarker;
+        return {squares}
+    }
 }
 
 const checkForMove = (squares, index, aiMarker, blocking = false) => {
@@ -56,7 +65,7 @@ const checkForMove = (squares, index, aiMarker, blocking = false) => {
         const [otherNeighbor] = neighbors.filter((i) => squares[i] !==marker);
         if(availableSquares.includes(otherNeighbor)){
             squares[otherNeighbor] = aiMarker;
-            return {squares: squares}
+            return {squares}
         }
         
     }
@@ -71,7 +80,7 @@ const checkForDiagonalAttack = (squares, aiMarker) =>{
         if(availableSquares.length){
             const randomSquareIndex = Math.floor(Math.random() * availableSquares.length);
             squares[availableSquares[randomSquareIndex]] = aiMarker;
-            return {squares: squares}
+            return {squares}
         }
     }
 }
@@ -80,5 +89,5 @@ export function AIMakeEasyMove(squares, aiMarker) {
     const availableSquares = squares.reduce((available, marker, idx) => !marker ? [...available, idx] : available, [] );
     const randomSquareIndex = Math.floor(Math.random() * availableSquares.length);
     squares[availableSquares[randomSquareIndex]] = aiMarker;
-    return {squares: squares}
+    return {squares}
 }
